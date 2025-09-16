@@ -1,41 +1,9 @@
 const { Expense } = require('../../models/Expense.model');
 
-async function getAll(userId, categories, from, to) {
-  const expenses = await Expense.findAll({ order: ['title'] });
-  let filteredExpenses = expenses;
+async function getAll(where) {
+  const expenses = await Expense.findAll({ where });
 
-  if (userId) {
-    filteredExpenses = filteredExpenses.filter(
-      (exp) => exp.userId === Number(userId),
-    );
-  }
-
-  if (categories) {
-    const categoryArray = Array.isArray(categories) ? categories : [categories];
-
-    filteredExpenses = filteredExpenses.filter(
-      (exp) => categoryArray.includes(exp.category),
-      // eslint-disable-next-line function-paren-newline
-    );
-  }
-
-  if (from) {
-    filteredExpenses = filteredExpenses.filter(
-      (exp) => new Date(exp.spentAt) >= new Date(from),
-    );
-  }
-
-  if (to) {
-    filteredExpenses = filteredExpenses.filter(
-      (exp) => new Date(exp.spentAt) <= new Date(to),
-    );
-  }
-
-  if (filteredExpenses.length > 1) {
-    filteredExpenses.sort((a, b) => a.id - b.id);
-  }
-
-  return filteredExpenses;
+  return expenses;
 }
 
 function get(id) {

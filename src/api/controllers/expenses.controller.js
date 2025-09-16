@@ -1,12 +1,35 @@
 const { expensesService } = require('../service/expenses.service');
 const { usersService } = require('../service/user.service');
+const { Op } = require('sequelize');
 
 const getAll = async (req, res) => {
   const { userId, categories, from, to } = req.query;
-  const expenses = await expensesService.getAll(userId, categories, from, to);
+  const where = {};
+
+  if (userId) {
+    where.userId = userId;
+  }
+
+  if (categories) {
+    const cats = categories.split(',').map((c) => c.trim());
+
+    where.category = {
+      [Op.in]: cats,
+    };
+  }
+
+  if (from) {
+    where.spentAt = { ...(where.spentAt || {}), [Op.gte]: from };
+  }
+
+  if (to) {
+    where.spentAt = { ...(where.spentAt || {}), [Op.lte]: to };
+  }
+
+  const expenses = await expensesService.getAll(where);
 
   res.status(200);
-  res.send(expenses);
+  res.json(expenses);
 };
 
 const get = async (req, res) => {
@@ -28,8 +51,9 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   const { title, userId, amount, category, note, spentAt } = req.body;
+  const normUserId = Number(userId);
 
-  if (!title || !userId || !amount || !spentAt) {
+  if (!title || isNaN(normUserId) || !amount || !spentAt) {
     return res.sendStatus(400);
   }
 

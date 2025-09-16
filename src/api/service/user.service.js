@@ -1,7 +1,10 @@
 const { User } = require('../../models/User.model');
 
 async function getAll() {
-  const users = await User.findAll({ order: ['name'] });
+  const users = await User.findAll({
+    order: ['name'],
+    attributes: ['id', 'name'],
+  });
 
   return users;
 }
