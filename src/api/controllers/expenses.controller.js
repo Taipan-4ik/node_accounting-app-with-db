@@ -3,42 +3,10 @@ const { usersService } = require('../service/user.service');
 
 const getAll = async (req, res) => {
   const { userId, categories, from, to } = req.query;
-  const expenses = await expensesService.getAll();
-
-  let filteredExpenses = expenses;
-
-  if (userId) {
-    filteredExpenses = filteredExpenses.filter(
-      (exp) => exp.userId === Number(userId),
-    );
-  }
-
-  if (categories) {
-    const categoryArray = Array.isArray(categories) ? categories : [categories];
-
-    filteredExpenses = filteredExpenses.filter((exp) =>
-      // eslint-disable-next-line prettier/prettier
-      categoryArray.includes(exp.category));
-  }
-
-  if (from) {
-    filteredExpenses = filteredExpenses.filter(
-      (exp) => new Date(exp.spentAt) >= new Date(from),
-    );
-  }
-
-  if (to) {
-    filteredExpenses = filteredExpenses.filter(
-      (exp) => new Date(exp.spentAt) <= new Date(to),
-    );
-  }
-
-  if (filteredExpenses.length > 1) {
-    filteredExpenses.sort((a, b) => a.id - b.id);
-  }
+  const expenses = await expensesService.getAll(userId, categories, from, to);
 
   res.status(200);
-  res.send(filteredExpenses);
+  res.send(expenses);
 };
 
 const get = async (req, res) => {

@@ -12,16 +12,8 @@ async function get(id) {
   return user;
 }
 
-let counter = 1;
-
-function generateId() {
-  counter = (counter + 1) % 1000;
-
-  return Math.floor(Date.now() / 1_000_000) * 1000 + counter;
-}
-
 async function create(name) {
-  const createdUser = User.create({ id: generateId(), name });
+  const createdUser = await User.create({ name });
 
   return createdUser;
 }
